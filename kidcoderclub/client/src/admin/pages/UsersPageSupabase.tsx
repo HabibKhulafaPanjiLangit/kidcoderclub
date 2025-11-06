@@ -29,6 +29,18 @@ interface UserWithDetails extends User {
 }
 
 const UsersPageSupabase: React.FC = () => {
+  const { user, loading: loadingAuth } = useAuth();
+
+  // Jika masih loading auth, tampilkan loading
+  if (loadingAuth) {
+    return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  }
+
+  // Jika belum login atau bukan admin, redirect ke halaman login admin
+  if (!user || (user.user_metadata?.role !== 'admin' && user.role !== 'admin')) {
+    return <Navigate to="/admin-login" replace />;
+  }
+
   const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
