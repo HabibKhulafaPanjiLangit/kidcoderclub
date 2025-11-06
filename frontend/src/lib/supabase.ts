@@ -13,31 +13,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase environment variables are not set. Using localStorage as fallback.');
 }
 
-// Custom fetch with better error handling
-const customFetch = (url: RequestInfo | URL, options?: RequestInit) => {
-  console.log('Fetch request:', { url, options });
-  return fetch(url, {
-    ...options,
-    mode: 'cors',
-    credentials: 'omit',
-  }).catch(error => {
-    console.error('Fetch error:', error);
-    throw error;
-  });
-};
-
 export const supabase = supabaseUrl && supabaseAnonKey 
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: false,
-        autoRefreshToken: false,
+        persistSession: true,
+        autoRefreshToken: true,
         detectSessionInUrl: false,
+        storageKey: 'kidcoderclub-auth',
+      },
+      db: {
+        schema: 'public',
       },
       global: {
-        fetch: customFetch,
         headers: {
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation',
+          'apikey': supabaseAnonKey,
         },
       },
     })
