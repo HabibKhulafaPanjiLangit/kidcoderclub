@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext.tsx';
+import './testSupabase'; // Test Supabase connection on load
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

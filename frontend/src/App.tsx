@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import WelcomeAnimation from './user/WelcomeAnimation';
-import MusicPlayer from './user/MusicPlayer';
 import PopupModal from './user/PopupModal';
 import Header from './user/Header';
 import Hero from './user/Hero';
@@ -10,9 +9,9 @@ import Mentors from './user/Mentors';
 import Gallery from './user/Gallery';
 import Testimonials from './user/Testimonials';
 import Registration from './user/Registration';
+import Login from './user/Login';
 import Footer from './user/Footer';
 import AdminDashboard from './admin/AdminDashboard';
-import { trackPageView } from './services/firebaseService';
 import Checkout from './user/kelas/Checkout';
 import AuthFlow from './user/auth/AuthFlow';
 
@@ -29,12 +28,8 @@ function App() {
 }
 
 function MainLayout() {
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false); // Disabled welcome animation
   const [modalData, setModalData] = useState({ isOpen: false, type: '', data: {} });
-
-  useEffect(() => {
-    trackPageView('home');
-  }, []);
 
   const handleWelcomeComplete = () => {
     setShowWelcome(false);
@@ -65,9 +60,13 @@ function MainLayout() {
       <Mentors onOpenModal={openModal} />
       <Gallery onOpenModal={openModal} />
       <Testimonials />
-      <Registration />
+      <div id="login">
+        <Login />
+      </div>
+      <div id="registration">
+        <Registration />
+      </div>
       <Footer />
-      <MusicPlayer />
     </div>
   );
 }

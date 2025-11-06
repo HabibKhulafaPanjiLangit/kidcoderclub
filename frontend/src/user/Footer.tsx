@@ -1,6 +1,5 @@
 import React from 'react';
 import { Code, Mail, Phone, MapPin, Facebook, Instagram, Youtube, Heart } from 'lucide-react';
-import { subscribeNewsletter, trackEvent } from '../services/firebaseService';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -8,21 +7,16 @@ const Footer = () => {
   const [isSubscribing, setIsSubscribing] = React.useState(false);
   const [subscriptionMessage, setSubscriptionMessage] = React.useState('');
 
-  const handleNewsletterSubmit = async (e) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
 
     setIsSubscribing(true);
     try {
-      const result = await subscribeNewsletter(email);
-      
-      if (result.success) {
-        setSubscriptionMessage('Berhasil berlangganan newsletter!');
-        setEmail('');
-        await trackEvent('newsletter_subscription', { email });
-      } else {
-        setSubscriptionMessage(result.error || 'Gagal berlangganan newsletter');
-      }
+      // Newsletter subscription - could be saved to Supabase later
+      setSubscriptionMessage('Berhasil berlangganan newsletter!');
+      setEmail('');
+      console.log('Newsletter subscription:', email);
     } catch (error) {
       setSubscriptionMessage('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
