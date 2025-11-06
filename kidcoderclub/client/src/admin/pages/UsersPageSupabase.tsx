@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../student/src/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 import { Search, UserCheck, Eye, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -45,6 +47,17 @@ const UsersPageSupabase: React.FC = () => {
       const { data: usersData, error: usersError } = await supabase
         .from('users')
         .select(`
+            const { user, loading } = useAuth();
+
+            // Jika masih loading auth, tampilkan loading
+            if (loading) {
+              return <div className="p-8 text-center text-gray-500">Loading...</div>;
+            }
+
+            // Jika belum login atau bukan admin, redirect ke halaman login admin
+            if (!user || user.role !== 'admin') {
+              return <Navigate to="/admin-login" replace />;
+            }
           *,
           students (*)
         `)
