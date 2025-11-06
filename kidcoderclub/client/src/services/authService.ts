@@ -4,7 +4,7 @@ interface RegisterData {
   email: string;
   password: string;
   name: string;
-  role: 'student' | 'mentor';
+  role: 'student' | 'mentor' | 'admin';
   phone?: string;
   // Student fields
   parentName?: string;
@@ -24,7 +24,7 @@ interface RegisterData {
 interface LoginData {
   emailOrId: string;
   password: string;
-  role: 'student' | 'mentor';
+  role: 'student' | 'mentor' | 'admin';
 }
 
 export class AuthService {
@@ -203,7 +203,7 @@ export class AuthService {
         .from('users')
         .select('*')
         .eq('id', authData.user.id)
-        .eq('role', data.role)
+        .eq('role', data.role as string)
         .single();
 
       if (userError) throw userError;
@@ -238,6 +238,9 @@ export class AuthService {
           .eq('user_id', authData.user.id)
           .single();
         additionalData = mentorData;
+      } else if (data.role === 'admin') {
+        // Untuk admin, tidak perlu ambil data tambahan
+        additionalData = {};
       }
 
       return {
