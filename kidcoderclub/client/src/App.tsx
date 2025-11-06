@@ -15,6 +15,7 @@ import Footer from './user/Footer';
 import AdminDashboard from './admin/AdminDashboard';
 import Checkout from './user/kelas/Checkout';
 import AuthFlow from './user/auth/AuthFlow';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/checkout/:id" element={<Checkout />} />
         <Route path="/register" element={<AuthFlow mode="default" />} />
         <Route path="/admin-login" element={<AuthFlow mode="admin" />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </AuthProvider>
   );
