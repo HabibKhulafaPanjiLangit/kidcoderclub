@@ -265,9 +265,27 @@ const Registration: React.FC = () => {
       <h2 className="text-2xl font-bold text-center mb-6">Formulir Pendaftaran</h2>
 
       {errors.general && (
-        <div className="mb-4 text-red-600 flex items-center gap-2">
-          <AlertCircle />
-          <span>{errors.general}</span>
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm animate-shake">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-red-800 mb-1">
+                {errors.general.includes('Email sudah terdaftar') || errors.general.includes('duplicate') 
+                  ? '⚠️ Email Sudah Terdaftar' 
+                  : '❌ Pendaftaran Gagal'}
+              </h3>
+              <p className="text-red-700 text-sm leading-relaxed">{errors.general}</p>
+              {(errors.general.includes('Email sudah terdaftar') || errors.general.includes('duplicate')) && (
+                <div className="mt-3 pt-3 border-t border-red-200">
+                  <p className="text-red-600 text-xs font-medium">💡 Saran:</p>
+                  <ul className="text-red-600 text-xs mt-1 space-y-1 ml-4 list-disc">
+                    <li>Gunakan email lain yang belum terdaftar</li>
+                    <li>Atau <a href="/login" className="underline font-semibold hover:text-red-800">login di sini</a> jika Anda sudah memiliki akun</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

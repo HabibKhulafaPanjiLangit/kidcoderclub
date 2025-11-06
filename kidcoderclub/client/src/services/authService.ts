@@ -80,11 +80,11 @@ export class AuthService {
         console.error('User insert failed:', errorText);
         
         // Parse error untuk pesan yang lebih user-friendly
-        if (errorText.includes('duplicate key') || errorText.includes('users_email_key')) {
-          throw new Error('Email sudah terdaftar. Silakan gunakan email lain atau login jika Anda sudah memiliki akun.');
+        if (errorText.includes('duplicate key') || errorText.includes('users_email_key') || errorText.includes('unique constraint')) {
+          throw new Error('Email sudah terdaftar. Email ini sudah digunakan oleh akun lain. Silakan gunakan email lain untuk mendaftar.');
         }
         
-        throw new Error(`Gagal membuat akun. Silakan coba lagi.`);
+        throw new Error(`Gagal membuat akun. Silakan coba lagi atau hubungi admin jika masalah berlanjut.`);
       }
 
       const insertedUser = await userResponse.json();
