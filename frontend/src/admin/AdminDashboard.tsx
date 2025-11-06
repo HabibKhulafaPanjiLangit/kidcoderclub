@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react';
 import { AppProvider } from './context/AppContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
-import UsersPage from './pages/UsersPage';
+import UsersPageSupabase from './pages/UsersPageSupabase';
 import CertificatesPage from './pages/CertificatesPage';
 import MaterialsPage from './pages/MaterialsPage';
 import PaymentsPage from './pages/PaymentsPage';
@@ -47,7 +47,7 @@ function AdminDashboard() {
           {/* Routes */}
           <Routes>
             <Route index element={<Dashboard />} />
-            <Route path="users" element={<UsersPage />} />
+            <Route path="users" element={<UsersPageSupabase />} />
             <Route path="certificates" element={<CertificatesPage />} />
             <Route path="materials" element={<MaterialsPage />} />
             <Route path="payments" element={<PaymentsPage />} />
