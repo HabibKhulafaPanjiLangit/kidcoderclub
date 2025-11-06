@@ -30,18 +30,43 @@ interface UserWithDetails extends User {
 
 const UsersPageSupabase: React.FC = () => {
   const { user, loading: loadingAuth } = useAuth();
+    const [dbUser, setDbUser] = useState(null);
+    const [checkingDbUser, setCheckingDbUser] = useState(false);
 
     // Debug: log user dan metadata
     console.log('Auth user:', user);
     if (user) console.log('User metadata:', user.user_metadata);
 
-  // Jika masih loading auth, tampilkan loading
-  if (loadingAuth) {
-    return <div className="p-8 text-center text-gray-500">Loading...</div>;
-  }
+    useEffect(() => {
+      // Jika user null, coba ambil dari tabel users
+      if (!user && !checkingDbUser) {
+        setCheckingDbUser(true);
+        const email = localStorage.getItem('lastAdminEmail');
+        if (email) {
+          supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single()
+            .then(({ data, error }) => {
+              if (data && data.role === 'admin') {
+                setDbUser(data);
+              }
+              setCheckingDbUser(false);
+            });
+        } else {
+          setCheckingDbUser(false);
+        }
+      }
+    }, [user, checkingDbUser]);
 
-    // Jika belum login atau bukan admin, redirect ke halaman login admin
-    if (!user || user.user_metadata?.role !== 'admin') {
+  // Jika masih loading auth, tampilkan loading
+    if (loadingAuth || checkingDbUser) {
+      return <div className="p-8 text-center text-gray-500">Loading...</div>;
+    }
+
+    // Jika belum login atau bukan admin, cek fallback dbUser
+    if ((!user || user.user_metadata?.role !== 'admin') && !(dbUser && dbUser.role === 'admin')) {
       return <Navigate to="/admin-login" replace />;
     }
 
