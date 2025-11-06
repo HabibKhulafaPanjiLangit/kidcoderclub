@@ -80,15 +80,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-600">
-        Don't have an account?{' '}
-        <button
-          onClick={onToggleForm}
-          className="text-blue-600 hover:text-blue-700 font-semibold"
-        >
-          Register here
-        </button>
-      </p>
+      {/* Link pendaftaran dihapus, hanya admin yang bisa login */}
     </div>
   );
 }
