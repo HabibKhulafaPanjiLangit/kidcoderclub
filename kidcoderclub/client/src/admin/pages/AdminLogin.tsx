@@ -60,59 +60,60 @@ const AdminLogin: React.FC = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white border border-gray-200 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">Masuk sebagai Admin</h2>
-      <p className="text-center text-sm text-purple-700 mb-4 font-semibold">Hanya admin yang dapat login di halaman ini. Akun dibuat oleh pengelola sistem.</p>
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg flex items-center gap-2 text-red-700">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm">{error}</span>
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block mb-2 font-semibold">Email</label>
-          <div className="relative">
-            <input
-              type="email"
-              className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Email admin"
-              required
-            />
-            <Mail className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-pink-100">
+      <div className="w-full max-w-md p-8 bg-white border border-gray-200 rounded-2xl shadow-2xl">
+        <h2 className="text-3xl font-bold text-center mb-4">Masuk sebagai Admin</h2>
+        <p className="text-center text-base text-purple-700 mb-6 font-semibold">Hanya admin yang dapat login di halaman ini. Akun dibuat oleh pengelola sistem.</p>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg flex items-center gap-2 text-red-700">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm">{error}</span>
           </div>
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold">Password</label>
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Password admin"
-              required
-            />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowPassword(prev => !prev)}
-            >
-              {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
-            </span>
-            <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+        )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block mb-2 font-semibold">Email</label>
+            <div className="relative">
+              <input
+                type="email"
+                className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Email admin"
+                required
+              />
+              <Mail className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
+            </div>
           </div>
-        </div>
-        <button
-          type="submit"
-          className="w-full py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all duration-300"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Memproses...' : 'Masuk'}
-        </button>
-      </form>
-      {/* Link lupa password dan daftar di sini dihapus agar hanya form login admin yang tampil */}
+          <div>
+            <label className="block mb-2 font-semibold">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Password admin"
+                required
+              />
+              <span
+                className="absolute right-3 top-3 cursor-pointer"
+                onClick={() => setShowPassword(prev => !prev)}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
+              </span>
+              <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-300"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Memproses...' : 'Masuk'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
