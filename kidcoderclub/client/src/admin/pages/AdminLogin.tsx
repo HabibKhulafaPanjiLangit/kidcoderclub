@@ -112,7 +112,7 @@ const AdminLogin: React.FC = () => {
           {isLoading ? 'Memproses...' : 'Masuk'}
         </button>
       </form>
-      {/* Hapus link daftar dan lupa password agar hanya login admin */}
+      {/* Link lupa password dan daftar di sini dihapus agar hanya form login admin yang tampil */}
     </div>
   );
 };
