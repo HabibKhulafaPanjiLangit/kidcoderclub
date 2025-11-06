@@ -36,10 +36,10 @@ const UsersPageSupabase: React.FC = () => {
     return <div className="p-8 text-center text-gray-500">Loading...</div>;
   }
 
-  // Jika belum login atau bukan admin, redirect ke halaman login admin
-  if (!user || (user.user_metadata?.role !== 'admin' && user.role !== 'admin')) {
-    return <Navigate to="/admin-login" replace />;
-  }
+    // Jika belum login atau bukan admin, redirect ke halaman login admin
+    if (!user || user.user_metadata?.role !== 'admin') {
+      return <Navigate to="/admin-login" replace />;
+    }
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
