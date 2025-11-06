@@ -25,7 +25,7 @@ const AdminLogin: React.FC = () => {
         password,
         role: 'admin',
       });
-      if (!result.success) {
+      if (!result.success && 'error' in result) {
         setError(result.error || 'Email atau Password salah');
         setIsLoading(false);
         return;

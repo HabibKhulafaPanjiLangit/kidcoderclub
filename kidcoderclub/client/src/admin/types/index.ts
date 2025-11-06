@@ -55,7 +55,7 @@ export interface SystemStats {
 
 export interface Alert {
   id: string;
-  type: 'warning' | 'success' | 'info' | 'error';
+  type: 'warning' | 'success' | 'info';
   title: string;
   message: string;
   time: string;
@@ -69,7 +69,7 @@ const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmF
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-async function updateUserRole(userId) {
+async function updateUserRole(userId: string) {
   const { data, error } = await supabase.auth.admin.updateUserById(userId, {
     user_metadata: { role: 'admin' }
   });

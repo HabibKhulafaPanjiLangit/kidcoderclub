@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Users, GraduationCap, PlayCircle, DollarSign } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import StatCard from './StatCard';

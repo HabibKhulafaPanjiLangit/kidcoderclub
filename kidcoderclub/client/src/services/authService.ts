@@ -199,12 +199,14 @@ export class AuthService {
       if (!authData.user) throw new Error('Login failed');
 
       // 2. Get user data dari table users
-      const { data: userData, error: userError } = await supabase
+      let userQuery = supabase
         .from('users')
         .select('*')
-        .eq('id', authData.user.id)
-        .eq('role', data.role as string)
-        .single();
+        .eq('id', authData.user.id);
+      if (data.role === 'student' || data.role === 'mentor') {
+        userQuery = userQuery.eq('role', data.role);
+      }
+      const { data: userData, error: userError } = await userQuery.single();
 
       if (userError) throw userError;
       if (!userData) throw new Error('User not found');

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { User } from '../types';
 
@@ -40,42 +40,7 @@ const UsersPage: React.FC = () => {
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingUser) {
-      updateUser(editingUser.id, formData);
-      setEditingUser(null);
-    } else {
-      addUser({
-        ...formData,
-        joinDate: new Date().toISOString().split('T')[0]
-      });
-      setShowAddModal(false);
-    }
-    setFormData({ name: '', email: '', role: 'student', status: 'active' });
-  };
-
-  const handleEdit = (user: User) => {
-    setEditingUser(user);
-    setFormData({
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      status: user.status
-    });
-  };
-
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      deleteUser(id);
-    }
-  };
-
-  const toggleUserStatus = (user: User) => {
-    updateUser(user.id, { 
-      status: user.status === 'active' ? 'inactive' : 'active' 
-    });
-  };
+  // ...existing code...
 
   return (
     <div className="p-6 lg:p-8">
@@ -181,7 +146,7 @@ const UsersPage: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               {editingUser ? 'Edit User' : 'Add New User'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input

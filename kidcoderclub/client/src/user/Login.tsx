@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, User, AlertCircle, CheckCircle } from 'lucide-react';
 import AuthService from '../services/authService';
 
-type UserRole = 'student' | 'mentor';
+type UserRole = 'student' | 'mentor' | 'admin';
 
 interface LoginFormData {
   emailOrId: string;
