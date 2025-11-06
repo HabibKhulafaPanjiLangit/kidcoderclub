@@ -58,21 +58,7 @@ const UsersPageSupabase: React.FC = () => {
       // Fetch users with their student details
       const { data: usersData, error: usersError } = await supabase
         .from('users')
-        .select(`
-            const { user, loading } = useAuth();
-
-            // Jika masih loading auth, tampilkan loading
-            if (loading) {
-              return <div className="p-8 text-center text-gray-500">Loading...</div>;
-            }
-
-            // Jika belum login atau bukan admin, redirect ke halaman login admin
-            if (!user || user.role !== 'admin') {
-              return <Navigate to="/admin-login" replace />;
-            }
-          *,
-          students (*)
-        `)
+        .select(`*, students(*)`)
         .order('created_at', { ascending: false });
 
       if (usersError) throw usersError;
