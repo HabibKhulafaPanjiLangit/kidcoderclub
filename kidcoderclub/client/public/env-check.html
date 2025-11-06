@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Check - KidCoder Club</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { color: #ffd700; }
+        .check-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .check-item.success { border-color: #4ade80; }
+        .check-item.error { border-color: #ef4444; }
+        .check-item.warning { border-color: #fbbf24; }
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .btn {
+            background: #4ade80;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        .btn:hover { background: #22c55e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 KidCoder Club - Environment Check</h1>
+        <p>Halaman ini membantu debugging environment variables di production.</p>
+        
+        <div id="results"></div>
+        
+        <button class="btn" onclick="checkEnvironment()">🔄 Check Again</button>
+        <button class="btn" onclick="testSupabase()">🧪 Test Supabase Connection</button>
+    </div>
+
+    <script type="module">
+        function renderCheckItem(label, status, message, details = '') {
+            const className = status === 'success' ? 'success' : status === 'error' ? 'error' : 'warning';
+            const icon = status === 'success' ? '✅' : status === 'error' ? '❌' : '⚠️';
+            
+            return `
+                <div class="check-item ${className}">
+                    <strong>${icon} ${label}</strong><br>
+                    ${message}
+                    ${details ? `<br><small style="opacity:0.7">${details}</small>` : ''}
+                </div>
+            `;
+        }
+
+        window.checkEnvironment = function() {
+            const results = document.getElementById('results');
+            let html = '<h2>Environment Variables</h2>';
+
+            // Check VITE_SUPABASE_URL
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            if (supabaseUrl) {
+                html += renderCheckItem(
+                    'VITE_SUPABASE_URL',
+                    'success',
+                    `Found: <code>${supabaseUrl.substring(0, 40)}...</code>`,
+                    `Length: ${supabaseUrl.length} characters`
+                );
+            } else {
+                html += renderCheckItem(
+                    'VITE_SUPABASE_URL',
+                    'error',
+                    'NOT FOUND - Variable tidak ter-set di Vercel!',
+                    'Tambahkan di Vercel Dashboard → Settings → Environment Variables'
+                );
+            }
+
+            // Check VITE_SUPABASE_ANON_KEY
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            if (supabaseKey) {
+                html += renderCheckItem(
+                    'VITE_SUPABASE_ANON_KEY',
+                    'success',
+                    `Found: <code>${supabaseKey.substring(0, 30)}...${supabaseKey.substring(supabaseKey.length - 10)}</code>`,
+                    `Length: ${supabaseKey.length} characters`
+                );
+            } else {
+                html += renderCheckItem(
+                    'VITE_SUPABASE_ANON_KEY',
+                    'error',
+                    'NOT FOUND - Variable tidak ter-set di Vercel!',
+                    'Tambahkan di Vercel Dashboard → Settings → Environment Variables'
+                );
+            }
+
+            // Other env info
+            html += '<h2>Build Information</h2>';
+            html += renderCheckItem('Mode', 'success', `<code>${import.meta.env.MODE}</code>`);
+            html += renderCheckItem('Dev Mode', import.meta.env.DEV ? 'warning' : 'success', `<code>${import.meta.env.DEV}</code>`);
+            html += renderCheckItem('Prod Mode', import.meta.env.PROD ? 'success' : 'warning', `<code>${import.meta.env.PROD}</code>`);
+
+            // All env keys
+            const allKeys = Object.keys(import.meta.env).filter(k => k.startsWith('VITE_'));
+            html += renderCheckItem(
+                'All VITE_ Variables',
+                allKeys.length > 0 ? 'success' : 'error',
+                `Found ${allKeys.length} variables`,
+                allKeys.length > 0 ? `Keys: ${allKeys.join(', ')}` : 'No VITE_ prefixed variables found!'
+            );
+
+            results.innerHTML = html;
+        };
+
+        window.testSupabase = async function() {
+            const results = document.getElementById('results');
+            results.innerHTML += '<h2>🧪 Testing Supabase Connection...</h2>';
+
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            if (!supabaseUrl || !supabaseKey) {
+                results.innerHTML += renderCheckItem(
+                    'Connection Test',
+                    'error',
+                    'Cannot test: Environment variables missing!'
+                );
+                return;
+            }
+
+            try {
+                // Try to fetch Supabase REST API
+                const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
+
+                if (response.ok || response.status === 404) {
+                    results.innerHTML += renderCheckItem(
+                        'Supabase Connection',
+                        'success',
+                        `Connected! Status: ${response.status}`,
+                        'Supabase API is reachable'
+                    );
+                } else {
+                    results.innerHTML += renderCheckItem(
+                        'Supabase Connection',
+                        'error',
+                        `Failed with status: ${response.status}`,
+                        `Response: ${await response.text()}`
+                    );
+                }
+            } catch (error) {
+                results.innerHTML += renderCheckItem(
+                    'Supabase Connection',
+                    'error',
+                    `Network error: ${error.message}`,
+                    'Mungkin CORS issue atau network problem'
+                );
+            }
+        };
+
+        // Auto-run on load
+        checkEnvironment();
+    </script>
+</body>
+</html>
