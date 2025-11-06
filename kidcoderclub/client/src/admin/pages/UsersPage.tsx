@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { supabase } from '../../lib/supabase';
 import { User } from '../types';
 
 const UsersPage: React.FC = () => {
-  const { users, addUser, updateUser, deleteUser } = useApp();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -15,9 +17,27 @@ const UsersPage: React.FC = () => {
     status: 'active' as 'active' | 'inactive'
   });
 
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, name, email, role, joinDate, status');
+      if (error) {
+        setError(error.message);
+        setUsers([]);
+      } else {
+        setUsers(data || []);
+      }
+      setLoading(false);
+    };
+    fetchUsers();
+  }, []);
+
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,83 +108,65 @@ const UsersPage: React.FC = () => {
       {/* Users Table */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Name</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Email</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Role</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Join Date</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold">
-                          {user.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="ml-3">
-                        <p className="font-medium text-gray-900">{user.name}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                      user.role === 'mentor' ? 'bg-green-100 text-green-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{user.joinDate}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => toggleUserStatus(user)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          user.status === 'active' 
-                            ? 'text-red-600 hover:bg-red-50' 
-                            : 'text-green-600 hover:bg-green-50'
-                        }`}
-                        title={user.status === 'active' ? 'Deactivate' : 'Activate'}
-                      >
-                        {user.status === 'active' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => handleEdit(user)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">Loading users...</div>
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">Failed to fetch users: {error}</div>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Email</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Role</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Join Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-semibold">
+                            {user.name?.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="ml-3">
+                          <p className="font-medium text-gray-900">{user.name}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                        user.role === 'mentor' ? 'bg-green-100 text-green-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {user.status?.charAt(0).toUpperCase() + user.status?.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{user.joinDate}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {/* Action buttons can be implemented to update/delete user via Supabase */}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
