@@ -31,6 +31,10 @@ interface UserWithDetails extends User {
 const UsersPageSupabase: React.FC = () => {
   const { user, loading: loadingAuth } = useAuth();
 
+    // Debug: log user dan metadata
+    console.log('Auth user:', user);
+    if (user) console.log('User metadata:', user.user_metadata);
+
   // Jika masih loading auth, tampilkan loading
   if (loadingAuth) {
     return <div className="p-8 text-center text-gray-500">Loading...</div>;
