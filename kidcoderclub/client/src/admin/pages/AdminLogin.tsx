@@ -90,7 +90,7 @@ const AdminLogin: React.FC = () => {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-3 pl-10 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Password admin"
@@ -102,7 +102,7 @@ const AdminLogin: React.FC = () => {
               >
                 {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
               </span>
-              <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
           <button
