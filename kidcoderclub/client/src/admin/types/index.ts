@@ -3,8 +3,9 @@ export interface User {
   name: string;
   email: string;
   role: 'student' | 'mentor' | 'admin';
-  joinDate: string;
-  status: 'active' | 'inactive';
+  status: 'pending' | 'approved' | 'rejected';
+  phone?: string | null;
+  created_at?: string;
   avatar?: string;
 }
 

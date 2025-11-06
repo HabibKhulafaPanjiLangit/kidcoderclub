@@ -23,7 +23,7 @@ const UsersPage: React.FC = () => {
       setError(null);
       const { data, error } = await supabase
         .from('users')
-        .select('id, name, email, role, joinDate, status');
+        .select('id, name, email, role, status, phone, created_at');
       if (error) {
         setError(error.message);
         setUsers([]);
@@ -120,7 +120,8 @@ const UsersPage: React.FC = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Email</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Role</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Join Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Phone</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Registered</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Actions</th>
                 </tr>
               </thead>
@@ -151,12 +152,15 @@ const UsersPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        user.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        user.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        user.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                       }`}>
                         {user.status?.charAt(0).toUpperCase() + user.status?.slice(1)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{user.joinDate}</td>
+                    <td className="px-6 py-4 text-gray-600">{user.phone || '-'}</td>
+                    <td className="px-6 py-4 text-gray-600">{user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '-'}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         {/* Action buttons can be implemented to update/delete user via Supabase */}
