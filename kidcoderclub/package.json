@@ -1,0 +1,19 @@
+{
+  "name": "kidcoderclub-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KidCoderClub - Full Stack Application",
+  "scripts": {
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install",
+    "install:all": "npm install && npm run install:client && npm run install:server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
