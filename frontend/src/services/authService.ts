@@ -29,17 +29,22 @@ interface LoginData {
 
 export class AuthService {
   /**
-   * Register new user dengan Supabase
+   * Register new user dengan Supabase menggunakan REST API langsung
    */
   static async register(data: RegisterData) {
     try {
-      // Jika Supabase tidak dikonfigurasi, gunakan localStorage
-      if (!supabase) {
+      // Dapatkan environment variables
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      // Jika tidak ada config, gunakan localStorage
+      if (!supabaseUrl || !supabaseKey) {
         console.log('Supabase not configured, using localStorage');
         return this.registerWithLocalStorage(data);
       }
 
-      console.log('Attempting Supabase registration...');
+      console.log('Attempting Supabase registration via REST API...');
+      console.log('Supabase URL:', supabaseUrl);
       
       // Generate UUID untuk user
       const userId = crypto.randomUUID();
@@ -48,71 +53,100 @@ export class AuthService {
       // 1. Insert user data ke table users dengan status pending
       console.log('Inserting user to database...');
       
-      const insertPromise = supabase
-        .from('users')
-        .insert({
-          id: userId,
-          email: data.email,
-          name: data.name,
-          role: data.role,
-          status: 'pending',
-          phone: data.phone || null,
-        })
-        .select()
-        .single();
+      const userPayload = {
+        id: userId,
+        email: data.email,
+        name: data.name,
+        role: data.role,
+        status: 'pending',
+        phone: data.phone || null,
+      };
 
-      const { data: insertedUser, error: userError } = await insertPromise;
+      console.log('User payload:', userPayload);
 
-      if (userError) {
-        console.error('Supabase error details:', {
-          message: userError.message,
-          details: userError.details,
-          hint: userError.hint,
-          code: userError.code
-        });
-        throw new Error(`Supabase error: ${userError.message}`);
+      const userResponse = await fetch(`${supabaseUrl}/rest/v1/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify(userPayload),
+      });
+
+      if (!userResponse.ok) {
+        const errorText = await userResponse.text();
+        console.error('User insert failed:', errorText);
+        throw new Error(`Failed to create user: ${errorText}`);
       }
-      
+
+      const insertedUser = await userResponse.json();
       console.log('✅ User record created successfully:', insertedUser);
 
       // 2. Insert data spesifik berdasarkan role
       if (data.role === 'student') {
-        const { error: studentError } = await supabase
-          .from('students')
-          .insert({
-            user_id: userId,
-            parent_name: data.parentName!,
-            parent_email: data.parentEmail!,
-            phone: data.phone!,
-            child_name: data.childName!,
-            child_age: Number(data.childAge!),
-            class_name: data.className!,
-          });
+        const studentPayload = {
+          user_id: userId,
+          parent_name: data.parentName!,
+          parent_email: data.parentEmail!,
+          phone: data.phone!,
+          child_name: data.childName!,
+          child_age: Number(data.childAge!),
+          class_name: data.className!,
+        };
 
-        if (studentError) {
-          console.error('Student insert error:', studentError);
-          throw studentError;
+        console.log('Inserting student data:', studentPayload);
+
+        const studentResponse = await fetch(`${supabaseUrl}/rest/v1/students`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Prefer': 'return=representation',
+          },
+          body: JSON.stringify(studentPayload),
+        });
+
+        if (!studentResponse.ok) {
+          const errorText = await studentResponse.text();
+          console.error('Student insert failed:', errorText);
+          throw new Error(`Failed to create student: ${errorText}`);
         }
-        console.log('Student record created successfully');
+
+        console.log('✅ Student record created successfully');
       } else if (data.role === 'mentor') {
-        // For now, skip certificate upload (can add later)
-        const { error: mentorError } = await supabase
-          .from('mentors')
-          .insert({
-            user_id: userId,
-            mentor_name: data.mentorName!,
-            mentor_email: data.mentorEmail!,
-            mentor_phone: data.mentorPhone!,
-            expertise: data.expertise!,
-            experience: data.experience!,
-            certificates: null, // TODO: Add certificate upload
-          });
+        const mentorPayload = {
+          user_id: userId,
+          mentor_name: data.mentorName!,
+          mentor_email: data.mentorEmail!,
+          mentor_phone: data.mentorPhone!,
+          expertise: data.expertise!,
+          experience: data.experience!,
+          certificates: null, // TODO: Add certificate upload
+        };
 
-        if (mentorError) {
-          console.error('Mentor insert error:', mentorError);
-          throw mentorError;
+        console.log('Inserting mentor data:', mentorPayload);
+
+        const mentorResponse = await fetch(`${supabaseUrl}/rest/v1/mentors`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Prefer': 'return=representation',
+          },
+          body: JSON.stringify(mentorPayload),
+        });
+
+        if (!mentorResponse.ok) {
+          const errorText = await mentorResponse.text();
+          console.error('Mentor insert failed:', errorText);
+          throw new Error(`Failed to create mentor: ${errorText}`);
         }
-        console.log('Mentor record created successfully');
+
+        console.log('✅ Mentor record created successfully');
       }
 
       console.log('Registration completed successfully!');
