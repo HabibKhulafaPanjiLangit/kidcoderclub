@@ -62,6 +62,7 @@ const AdminLogin: React.FC = () => {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white border border-gray-200 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold text-center mb-6">Masuk sebagai Admin</h2>
+      <p className="text-center text-sm text-purple-700 mb-4 font-semibold">Hanya admin yang dapat login di halaman ini. Akun dibuat oleh pengelola sistem.</p>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg flex items-center gap-2 text-red-700">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -111,6 +112,7 @@ const AdminLogin: React.FC = () => {
           {isLoading ? 'Memproses...' : 'Masuk'}
         </button>
       </form>
+      {/* Hapus link daftar dan lupa password agar hanya login admin */}
     </div>
   );
 };
