@@ -78,7 +78,13 @@ export class AuthService {
       if (!userResponse.ok) {
         const errorText = await userResponse.text();
         console.error('User insert failed:', errorText);
-        throw new Error(`Failed to create user: ${errorText}`);
+        
+        // Parse error untuk pesan yang lebih user-friendly
+        if (errorText.includes('duplicate key') || errorText.includes('users_email_key')) {
+          throw new Error('Email sudah terdaftar. Silakan gunakan email lain atau login jika Anda sudah memiliki akun.');
+        }
+        
+        throw new Error(`Gagal membuat akun. Silakan coba lagi.`);
       }
 
       const insertedUser = await userResponse.json();
@@ -157,6 +163,15 @@ export class AuthService {
       };
     } catch (error: any) {
       console.error('Registration error:', error);
+      
+      // Handle network errors
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        return {
+          success: false,
+          error: 'Gagal terhubung ke server. Periksa koneksi internet Anda dan coba lagi.',
+        };
+      }
+      
       return {
         success: false,
         error: error.message || 'Terjadi kesalahan saat pendaftaran',
