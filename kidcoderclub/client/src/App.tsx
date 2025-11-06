@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AuthProvider } from './student/src/contexts/AuthContext';
 import { Routes, Route } from 'react-router-dom';
 import WelcomeAnimation from './user/WelcomeAnimation';
 import PopupModal from './user/PopupModal';
@@ -17,13 +18,15 @@ import AuthFlow from './user/auth/AuthFlow';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/*" element={<MainLayout />} />
-      <Route path="/admin/*" element={<AdminDashboard />} />
-      <Route path="/checkout/:id" element={<Checkout />} />
-      <Route path="/register" element={<AuthFlow mode="default" />} />
-      <Route path="/admin-login" element={<AuthFlow mode="admin" />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/*" element={<MainLayout />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/checkout/:id" element={<Checkout />} />
+        <Route path="/register" element={<AuthFlow mode="default" />} />
+        <Route path="/admin-login" element={<AuthFlow mode="admin" />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 
