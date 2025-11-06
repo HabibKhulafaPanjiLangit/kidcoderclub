@@ -38,7 +38,7 @@ const AdminLogin: React.FC = () => {
         role: result.user.role
       }));
       setTimeout(() => {
-        window.location.href = '/dashboard/admin';
+        window.location.href = '/admin';
       }, 1500);
     } catch (error: any) {
       setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
