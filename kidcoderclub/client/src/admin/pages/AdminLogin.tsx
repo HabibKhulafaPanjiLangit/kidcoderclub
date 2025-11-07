@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import AuthService from '../../services/authService';
 
@@ -9,6 +10,7 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,9 +33,8 @@ const AdminLogin: React.FC = () => {
         return;
       }
       setSuccess(true);
-      // Tidak perlu simpan ke localStorage, session Supabase sudah aktif
       setTimeout(() => {
-        window.location.href = '/admin';
+        navigate('/admin');
       }, 1500);
     } catch (error: any) {
       setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
