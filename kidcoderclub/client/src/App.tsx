@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AuthProvider } from './student/src/contexts/AuthContext';
+// AuthProvider sudah dibungkus di main.tsx, tidak perlu di sini
 import { Routes, Route } from 'react-router-dom';
 import WelcomeAnimation from './user/WelcomeAnimation';
 import PopupModal from './user/PopupModal';
@@ -20,16 +20,14 @@ import AdminLogin from './admin/pages/AdminLogin';
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/*" element={<MainLayout />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-        <Route path="/checkout/:id" element={<Checkout />} />
-        <Route path="/register" element={<AuthFlow mode="default" />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
-    </AuthProvider>
+    <Routes>
+      <Route path="/*" element={<MainLayout />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
+      <Route path="/checkout/:id" element={<Checkout />} />
+      <Route path="/register" element={<AuthFlow mode="default" />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+    </Routes>
   );
 }
 
