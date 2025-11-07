@@ -65,12 +65,16 @@ const UsersPageSupabase: React.FC = () => {
       return <div className="p-8 text-center text-gray-500">Loading...</div>;
     }
 
+    // Debug log user dan metadata
+    console.log('Auth user:', user);
+    console.log('User metadata:', user?.user_metadata);
     // Jika belum login atau bukan admin, cek fallback dbUser
     const isAdmin = user && (
       user.user_metadata?.role === 'admin' ||
       (user.user_metadata && (user.user_metadata['role'] === 'admin'))
     );
     if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
+      console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
       return <Navigate to="/admin-login" replace />;
     }
 

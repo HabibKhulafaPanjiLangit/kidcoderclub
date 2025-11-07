@@ -31,12 +31,7 @@ const AdminLogin: React.FC = () => {
         return;
       }
       setSuccess(true);
-      localStorage.setItem('kidcoderclub_current_user', JSON.stringify({
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        role: result.user.role
-      }));
+      // Tidak perlu simpan ke localStorage, session Supabase sudah aktif
       setTimeout(() => {
         window.location.href = '/admin';
       }, 1500);
