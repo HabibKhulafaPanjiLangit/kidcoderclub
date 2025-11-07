@@ -30,7 +30,7 @@ interface UserWithDetails extends User {
 
 const UsersPageSupabase: React.FC = () => {
   const { user, loading: loadingAuth } = useAuth();
-    const [dbUser, setDbUser] = useState(null);
+    const [dbUser, setDbUser] = useState<User | null>(null);
     const [checkingDbUser, setCheckingDbUser] = useState(false);
 
     // Debug: log user dan metadata
@@ -50,7 +50,7 @@ const UsersPageSupabase: React.FC = () => {
             .single()
             .then(({ data, error }) => {
               if (data && data.role === 'admin') {
-                setDbUser(data);
+                setDbUser(data as User);
               }
               setCheckingDbUser(false);
             });
@@ -66,7 +66,11 @@ const UsersPageSupabase: React.FC = () => {
     }
 
     // Jika belum login atau bukan admin, cek fallback dbUser
-    if ((!user || user.user_metadata?.role !== 'admin') && !(dbUser && dbUser.role === 'admin')) {
+    const isAdmin = user && (
+      user.user_metadata?.role === 'admin' ||
+      (user.user_metadata && (user.user_metadata['role'] === 'admin'))
+    );
+    if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
       return <Navigate to="/admin-login" replace />;
     }
 
@@ -151,14 +155,12 @@ const UsersPageSupabase: React.FC = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers: UserWithDetails[] = users.filter((user: UserWithDetails) => {
     const matchesSearch = 
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.student?.child_name.toLowerCase().includes(searchTerm.toLowerCase());
-    
+      (user.student?.child_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
-    
     return matchesSearch && matchesStatus;
   });
 
