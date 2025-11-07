@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../student/src/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Search, UserCheck, Eye, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -35,7 +35,7 @@ const UsersPageSupabase: React.FC = () => {
 
     // Debug: log user dan metadata
     console.log('Auth user:', user);
-    if (user) console.log('User metadata:', user.user_metadata);
+  // Tidak perlu log user_metadata, ambil role dari dbUser
 
     useEffect(() => {
       // Jika user null, coba ambil dari tabel users
@@ -65,14 +65,10 @@ const UsersPageSupabase: React.FC = () => {
       return <div className="p-8 text-center text-gray-500">Loading...</div>;
     }
 
-    // Debug log user dan metadata
+    // Debug log user
     console.log('Auth user:', user);
-    console.log('User metadata:', user?.user_metadata);
     // Jika belum login atau bukan admin, cek fallback dbUser
-    const isAdmin = user && (
-      user.user_metadata?.role === 'admin' ||
-      (user.user_metadata && (user.user_metadata['role'] === 'admin'))
-    );
+    const isAdmin = dbUser && dbUser.role === 'admin';
     if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
       console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
       return <Navigate to="/admin-login" replace />;
