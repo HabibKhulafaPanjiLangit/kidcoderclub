@@ -33,9 +33,7 @@ const AdminLogin: React.FC = () => {
         return;
       }
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/admin');
-      }, 1500);
+      navigate('/admin');
     } catch (error: any) {
       setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
     } finally {
