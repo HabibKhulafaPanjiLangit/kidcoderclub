@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, LoginCredentials, RegisterCredentials, AuthContextType } from '../types/auth';
 
+import { supabase } from '../lib/supabase';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
@@ -30,41 +32,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
-    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Get stored users
-      const storedUsers = JSON.parse(localStorage.getItem('kidcoderclub_users') || '[]');
-      
-      // Find user with matching email and role
-      const foundUser = storedUsers.find((u: User & { password: string }) => 
-        u.email === credentials.email && 
-        u.role === credentials.role
-      );
-      
-      if (!foundUser) {
-        throw new Error('User not found with this email and role');
+      // Query Supabase users table
+      // NOTE: Adjust column names if needed (password, role, status)
+      // Only allow login if status === 'approved'
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', credentials.email)
+        .eq('role', credentials.role)
+        .eq('status', 'approved')
+        .single();
+
+      if (error || !data) {
+        throw new Error('User not found or not approved');
       }
-      
-      // In a real app, you'd hash and compare passwords
-      if (foundUser.password !== credentials.password) {
+
+      // Password check (plain text, adjust if using hash)
+      if (data.password !== credentials.password) {
         throw new Error('Invalid password');
       }
-      
-      // Create user object without password
+
+      // Build user object
       const userWithoutPassword: User = {
-        id: foundUser.id,
-        email: foundUser.email,
-        name: foundUser.name,
-        role: foundUser.role,
-        createdAt: new Date(foundUser.createdAt)
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        role: data.role,
+        createdAt: new Date(data.created_at)
       };
-      
+
       setUser(userWithoutPassword);
       localStorage.setItem('kidcoderclub_user', JSON.stringify(userWithoutPassword));
-      
+      localStorage.setItem('lastAdminEmail', data.email);
       return true;
     } catch (error) {
       console.error('Login error:', error);

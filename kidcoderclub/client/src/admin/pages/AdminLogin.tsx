@@ -32,8 +32,9 @@ const AdminLogin: React.FC = () => {
         setIsLoading(false);
         return;
       }
-      setSuccess(true);
-      navigate('/admin');
+  setSuccess(true);
+  localStorage.setItem('lastAdminEmail', email);
+  navigate('/admin');
     } catch (error: any) {
       setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
     } finally {

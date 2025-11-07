@@ -8,7 +8,7 @@ interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: 'admin' | 'student' | 'mentor';
   status: string;
   phone: string | null;
   created_at: string;
@@ -29,7 +29,7 @@ interface UserWithDetails extends User {
 }
 
 const UsersPageSupabase: React.FC = () => {
-  const { user, loading: loadingAuth } = useAuth();
+  const { user, isLoading: loadingAuth } = useAuth();
     const [dbUser, setDbUser] = useState<User | null>(null);
     const [checkingDbUser, setCheckingDbUser] = useState(false);
 
@@ -48,9 +48,9 @@ const UsersPageSupabase: React.FC = () => {
             .select('*')
             .eq('email', email)
             .single()
-            .then(({ data, error }) => {
-              if (data && data.role === 'admin') {
-                setDbUser(data as User);
+            .then(({ data }) => {
+              if (data && typeof data.role === 'string' && data.role.toLowerCase() === 'admin') {
+                setDbUser({ ...data, role: 'admin' });
               }
               setCheckingDbUser(false);
             });
