@@ -18,6 +18,15 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+    // Logout handler
+    const handleLogout = async () => {
+      // Hapus session Supabase
+      await import('../../lib/supabase').then(({ supabase }) => supabase.auth.signOut());
+      // Hapus user dari localStorage
+      localStorage.removeItem('kidcoderclub_user');
+      // Redirect ke halaman login admin
+      navigate('/admin-login');
+    };
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -75,6 +84,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             </button>
           </div>
         </div>
+            {/* Tombol Logout */}
+            <button
+              onClick={handleLogout}
+              className="mt-6 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >Logout</button>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
