@@ -13,6 +13,7 @@ const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
+      console.log('HANDLE SUBMIT TRIGGERED', { email, password });
     e.preventDefault();
     setError('');
     setIsLoading(true);
