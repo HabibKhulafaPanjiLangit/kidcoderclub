@@ -17,17 +17,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load user from localStorage on app start
+  // Load user from Supabase Auth session or localStorage on app start
   useEffect(() => {
-    const savedUser = localStorage.getItem('kidcoderclub_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('kidcoderclub_user');
+    const loadUser = async () => {
+      // 1. Cek Supabase Auth session
+      const { data: { user: supaUser } } = await supabase.auth.getUser();
+      if (supaUser) {
+        // Ambil data user dari tabel users
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', supaUser.id)
+          .single();
+        if (data) {
+          setUser({
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            status: data.status,
+          });
+          localStorage.setItem('kidcoderclub_user', JSON.stringify({
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            status: data.status,
+          }));
+          return;
+        }
       }
-    }
+      // 2. Fallback ke localStorage
+      const savedUser = localStorage.getItem('kidcoderclub_user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (error) {
+          console.error('Error parsing saved user:', error);
+          localStorage.removeItem('kidcoderclub_user');
+        }
+      }
+    };
+    loadUser();
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
