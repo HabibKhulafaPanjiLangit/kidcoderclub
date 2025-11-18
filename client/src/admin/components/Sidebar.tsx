@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         lg:translate-x-0 lg:static lg:z-auto
         w-64 flex flex-col
       `}>
-        {/* Header */}
+        {/* Header + Logout */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -83,6 +83,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               <X className="w-5 h-5 text-gray-600" />
             </button>
           </div>
+          {/* Tombol Logout dengan ikon */}
+          <button
+            onClick={handleLogout}
+            className="mt-6 w-full px-4 py-2 flex items-center justify-center gap-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" /></svg>
+            Logout
+          </button>
         </div>
             {/* Tombol Logout */}
             <button
