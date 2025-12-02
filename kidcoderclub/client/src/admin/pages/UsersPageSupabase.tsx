@@ -67,12 +67,7 @@ const UsersPageSupabase: React.FC = () => {
 
     // Debug log user
     console.log('Auth user:', user);
-    // Jika belum login atau bukan admin, cek fallback dbUser
-    const isAdmin = dbUser && dbUser.role === 'admin';
-    if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
-      console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
-      return <Navigate to="/admin-login" replace />;
-    }
+    // Validasi admin dihilangkan, halaman bisa diakses semua user
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
