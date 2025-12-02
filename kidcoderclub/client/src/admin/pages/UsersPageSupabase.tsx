@@ -30,49 +30,58 @@ interface UserWithDetails extends User {
 
 const UsersPageSupabase: React.FC = () => {
   const { user, isLoading: loadingAuth } = useAuth();
-    const [dbUser, setDbUser] = useState<User | null>(null);
-    const [checkingDbUser, setCheckingDbUser] = useState(false);
+  const [dbUser, setDbUser] = useState<User | null>(null);
+  const [checkingDbUser, setCheckingDbUser] = useState(false);
 
-    // Debug: log user dan metadata
-    console.log('Auth user:', user);
-  // Tidak perlu log user_metadata, ambil role dari dbUser
-
-    useEffect(() => {
-      // Jika user null, coba ambil dari tabel users
-      if (!user && !checkingDbUser) {
-        setCheckingDbUser(true);
-        const email = localStorage.getItem('lastAdminEmail');
-        if (email) {
-          supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .single()
-            .then(({ data }) => {
-              if (data && typeof data.role === 'string' && data.role.toLowerCase() === 'admin') {
-                setDbUser({ ...data, role: 'admin' });
-              }
-              setCheckingDbUser(false);
-            });
-        } else {
-          setCheckingDbUser(false);
+  // Ambil user dari localStorage jika context kosong
+  useEffect(() => {
+    if (!user && !checkingDbUser) {
+      setCheckingDbUser(true);
+      // Coba ambil dari localStorage
+      const savedUser = localStorage.getItem('kidcoderclub_user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          if (parsedUser && parsedUser.role === 'admin') {
+            setDbUser(parsedUser);
+            setCheckingDbUser(false);
+            return;
+          }
+        } catch (e) {
+          // ignore
         }
       }
-    }, [user, checkingDbUser]);
+      // Fallback: ambil dari Supabase jika ada lastAdminEmail
+      const email = localStorage.getItem('lastAdminEmail');
+      if (email) {
+        supabase
+          .from('users')
+          .select('*')
+          .eq('email', email)
+          .single()
+          .then(({ data }) => {
+            if (data && typeof data.role === 'string' && data.role.toLowerCase() === 'admin') {
+              setDbUser({ ...data, role: 'admin' });
+            }
+            setCheckingDbUser(false);
+          });
+      } else {
+        setCheckingDbUser(false);
+      }
+    }
+  }, [user, checkingDbUser]);
 
   // Jika masih loading auth, tampilkan loading
-    if (loadingAuth || checkingDbUser) {
-      return <div className="p-8 text-center text-gray-500">Loading...</div>;
-    }
+  if (loadingAuth || checkingDbUser) {
+    return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  }
 
-    // Debug log user
-    console.log('Auth user:', user);
-    // Jika belum login atau bukan admin, cek fallback dbUser
-    const isAdmin = dbUser && dbUser.role === 'admin';
-    if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
-      console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
-      return <Navigate to="/admin-login" replace />;
-    }
+  // Validasi admin: cek context, localStorage, dan fallback dbUser
+  const isAdmin = (user && user.role === 'admin') || (dbUser && dbUser.role === 'admin');
+  if (!isAdmin) {
+    console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
+    return <Navigate to="/admin-login" replace />;
+  }
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
