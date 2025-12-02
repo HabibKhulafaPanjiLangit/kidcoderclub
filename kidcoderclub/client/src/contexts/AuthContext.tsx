@@ -34,8 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       // Query Supabase users table
-      // NOTE: Adjust column names if needed (password, role, status)
-      // Only allow login if status === 'approved'
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -53,17 +51,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid password');
       }
 
-      // Build user object
-      const userWithoutPassword: User = {
+      // Build user object (match admin User type)
+      const userForAdmin = {
         id: data.id,
-        email: data.email,
         name: data.name,
+        email: data.email,
         role: data.role,
-        createdAt: new Date(data.created_at)
+        status: data.status,
+        phone: data.phone || null,
+        created_at: data.created_at,
+        avatar: data.avatar || undefined
       };
 
-      setUser(userWithoutPassword);
-      localStorage.setItem('kidcoderclub_user', JSON.stringify(userWithoutPassword));
+      setUser(userForAdmin);
+      localStorage.setItem('kidcoderclub_user', JSON.stringify(userForAdmin));
       localStorage.setItem('lastAdminEmail', data.email);
       return true;
     } catch (error) {
