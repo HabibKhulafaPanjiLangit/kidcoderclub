@@ -1,0 +1,6 @@
+{
+  "builds": [
+    { "src": "kidcoderclub/client/package.json", "use": "@vercel/node" }
+  ],
+  "outputDirectory": "kidcoderclub/client/dist"
+}
