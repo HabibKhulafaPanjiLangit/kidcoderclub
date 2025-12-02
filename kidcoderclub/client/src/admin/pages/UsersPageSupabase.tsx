@@ -250,54 +250,20 @@ const UsersPageSupabase: React.FC = () => {
   const rejectedCount = users.filter(u => u.status === 'rejected').length;
 
   return (
-    {/* Pastikan user/dbUser valid sebelum render */}
-    {(user || dbUser) ? (
-      <div className="p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
-        <p className="text-gray-600">Review and approve/reject user registrations</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-800">{users.length}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <UserCheck className="w-6 h-6 text-blue-600" />
-            </div>
+    <>
+      {/* Pastikan user/dbUser valid sebelum render */}
+      {(user || dbUser) ? (
+        <div className="p-6 lg:p-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
+            <p className="text-gray-600">Review and approve/reject user registrations</p>
           </div>
+          {/* ...existing code... */}
         </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <RefreshCw className="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
+      ) : (
+        <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
+      )}
+    </>
             <div>
               <p className="text-sm text-gray-600">Rejected</p>
               <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
