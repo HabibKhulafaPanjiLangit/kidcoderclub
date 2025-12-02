@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: Users, label: 'Manage Users', path: '/admin/users' },
+    { icon: Users, label: 'Manage User (Approval)', path: '/admin/users' },
     { icon: Award, label: 'Manage Certificates', path: '/admin/certificates' },
     { icon: BookOpen, label: 'Learning Materials', path: '/admin/materials' },
     { icon: CreditCard, label: 'Payment Gateway', path: '/admin/payments' },

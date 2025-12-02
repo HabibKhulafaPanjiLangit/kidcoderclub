@@ -1,3 +1,4 @@
+export default null;
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock, User, Mail, Phone, GraduationCap, BookOpen, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
