@@ -67,13 +67,28 @@ const UsersPageSupabase: React.FC = () => {
 
     // Debug log user
     console.log('Auth user:', user);
-    // Validasi admin dihilangkan, halaman bisa diakses semua user
+    // Jika belum login atau bukan admin, cek fallback dbUser
+    const isAdmin = dbUser && dbUser.role === 'admin';
+    if ((!user || !isAdmin) && !(dbUser && dbUser.role === 'admin')) {
+      console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
+      return <Navigate to="/admin-login" replace />;
+    }
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithDetails | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState<UserWithDetails | null>(null);
+  const [addForm, setAddForm] = useState({
+    name: '',
+    email: '',
+    role: 'student',
+    status: 'pending',
+    phone: '',
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -132,6 +147,63 @@ const UsersPageSupabase: React.FC = () => {
   };
 
   const handleReject = async (userId: string) => {
+      const handleDelete = async (userId: string) => {
+        if (!confirm('Are you sure you want to DELETE this user?')) return;
+        try {
+          const { error } = await supabase
+            .from('users')
+            .delete()
+            .eq('id', userId);
+          if (error) throw error;
+          alert('User deleted successfully!');
+          fetchUsers();
+        } catch (error: any) {
+          console.error('Error deleting user:', error);
+          alert('Failed to delete user: ' + error.message);
+        }
+      };
+
+      const handleEdit = (user: UserWithDetails) => {
+        setEditForm(user);
+        setShowEditModal(true);
+      };
+
+      const handleEditSubmit = async () => {
+        if (!editForm) return;
+        try {
+          const { error } = await supabase
+            .from('users')
+            .update({
+              name: editForm.name,
+              email: editForm.email,
+              role: editForm.role,
+              status: editForm.status,
+              phone: editForm.phone,
+            })
+            .eq('id', editForm.id);
+          if (error) throw error;
+          alert('User updated successfully!');
+          setShowEditModal(false);
+          fetchUsers();
+        } catch (error: any) {
+          alert('Failed to update user: ' + error.message);
+        }
+      };
+
+      const handleAddSubmit = async () => {
+        try {
+          const { error } = await supabase
+            .from('users')
+            .insert([{ ...addForm }]);
+          if (error) throw error;
+          alert('User added successfully!');
+          setShowAddModal(false);
+          setAddForm({ name: '', email: '', role: 'student', status: 'pending', phone: '' });
+          fetchUsers();
+        } catch (error: any) {
+          alert('Failed to add user: ' + error.message);
+        }
+      };
     if (!confirm('Are you sure you want to REJECT this registration?')) return;
 
     try {
@@ -166,8 +238,8 @@ const UsersPageSupabase: React.FC = () => {
   return (
     <div className="p-6 lg:p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Manage User (Approval)</h1>
-        <p className="text-gray-600">Admin dapat melihat dan menyetujui pendaftar mentor dan murid</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
+        <p className="text-gray-600">Review and approve/reject user registrations</p>
       </div>
 
       {/* Stats Cards */}
@@ -221,7 +293,7 @@ const UsersPageSupabase: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters & Add User */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -233,7 +305,6 @@ const UsersPageSupabase: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
@@ -244,13 +315,18 @@ const UsersPageSupabase: React.FC = () => {
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
         </select>
-
         <button
           onClick={fetchUsers}
           className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
+        </button>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          + Add User
         </button>
       </div>
 
@@ -338,7 +414,20 @@ const UsersPageSupabase: React.FC = () => {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                          title="Edit User"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete User"
+                        >
+                          🗑️
+                        </button>
                         {user.status === 'pending' && (
                           <>
                             <button
@@ -369,6 +458,52 @@ const UsersPageSupabase: React.FC = () => {
 
       {/* Detail Modal */}
       {selectedUser && (
+              {/* Add User Modal */}
+              {showAddModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
+                  <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                    <h2 className="text-xl font-bold mb-4">Add New User</h2>
+                    <form onSubmit={e => { e.preventDefault(); handleAddSubmit(); }} className="space-y-4">
+                      <input type="text" placeholder="Name" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
+                      <input type="email" placeholder="Email" value={addForm.email} onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
+                      <input type="text" placeholder="Phone" value={addForm.phone} onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+                      <select value={addForm.role} onChange={e => setAddForm(f => ({ ...f, role: e.target.value }))} className="w-full border px-3 py-2 rounded">
+                        <option value="student">Student</option>
+                        <option value="mentor">Mentor</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Add User</button>
+                      <button type="button" onClick={() => setShowAddModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Edit User Modal */}
+              {showEditModal && editForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
+                  <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                    <h2 className="text-xl font-bold mb-4">Edit User</h2>
+                    <form onSubmit={e => { e.preventDefault(); handleEditSubmit(); }} className="space-y-4">
+                      <input type="text" placeholder="Name" value={editForm.name} onChange={e => setEditForm(f => f ? { ...f, name: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
+                      <input type="email" placeholder="Email" value={editForm.email} onChange={e => setEditForm(f => f ? { ...f, email: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
+                      <input type="text" placeholder="Phone" value={editForm.phone || ''} onChange={e => setEditForm(f => f ? { ...f, phone: e.target.value } : f)} className="w-full border px-3 py-2 rounded" />
+                      <select value={editForm.role} onChange={e => setEditForm(f => f ? { ...f, role: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
+                        <option value="student">Student</option>
+                        <option value="mentor">Mentor</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <select value={editForm.status} onChange={e => setEditForm(f => f ? { ...f, status: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                      <button type="submit" className="w-full bg-yellow-600 text-white py-2 rounded">Save Changes</button>
+                      <button type="button" onClick={() => setShowEditModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
+                    </form>
+                  </div>
+                </div>
+              )}
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-2xl font-bold text-gray-800 mb-6">User Details</h2>
