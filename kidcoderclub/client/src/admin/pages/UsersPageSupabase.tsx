@@ -456,58 +456,58 @@ const UsersPageSupabase: React.FC = () => {
         )}
       </div>
 
+      {/* Add User Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+            <h2 className="text-xl font-bold mb-4">Add New User</h2>
+            <form onSubmit={e => { e.preventDefault(); handleAddSubmit(); }} className="space-y-4">
+              <input type="text" placeholder="Name" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
+              <input type="email" placeholder="Email" value={addForm.email} onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
+              <input type="text" placeholder="Phone" value={addForm.phone} onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+              <select value={addForm.role} onChange={e => setAddForm(f => ({ ...f, role: e.target.value }))} className="w-full border px-3 py-2 rounded">
+                <option value="student">Student</option>
+                <option value="mentor">Mentor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Add User</button>
+              <button type="button" onClick={() => setShowAddModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showEditModal && editForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+            <h2 className="text-xl font-bold mb-4">Edit User</h2>
+            <form onSubmit={e => { e.preventDefault(); handleEditSubmit(); }} className="space-y-4">
+              <input type="text" placeholder="Name" value={editForm.name} onChange={e => setEditForm(f => f ? { ...f, name: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
+              <input type="email" placeholder="Email" value={editForm.email} onChange={e => setEditForm(f => f ? { ...f, email: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
+              <input type="text" placeholder="Phone" value={editForm.phone || ''} onChange={e => setEditForm(f => f ? { ...f, phone: e.target.value } : f)} className="w-full border px-3 py-2 rounded" />
+              <select value={editForm.role} onChange={e => setEditForm(f => f ? { ...f, role: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
+                <option value="student">Student</option>
+                <option value="mentor">Mentor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <select value={editForm.status} onChange={e => setEditForm(f => f ? { ...f, status: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <button type="submit" className="w-full bg-yellow-600 text-white py-2 rounded">Save Changes</button>
+              <button type="button" onClick={() => setShowEditModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Detail Modal */}
       {selectedUser && (
-              {/* Add User Modal */}
-              {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
-                  <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                    <h2 className="text-xl font-bold mb-4">Add New User</h2>
-                    <form onSubmit={e => { e.preventDefault(); handleAddSubmit(); }} className="space-y-4">
-                      <input type="text" placeholder="Name" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
-                      <input type="email" placeholder="Email" value={addForm.email} onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
-                      <input type="text" placeholder="Phone" value={addForm.phone} onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))} className="w-full border px-3 py-2 rounded" />
-                      <select value={addForm.role} onChange={e => setAddForm(f => ({ ...f, role: e.target.value }))} className="w-full border px-3 py-2 rounded">
-                        <option value="student">Student</option>
-                        <option value="mentor">Mentor</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Add User</button>
-                      <button type="button" onClick={() => setShowAddModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-
-              {/* Edit User Modal */}
-              {showEditModal && editForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
-                  <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                    <h2 className="text-xl font-bold mb-4">Edit User</h2>
-                    <form onSubmit={e => { e.preventDefault(); handleEditSubmit(); }} className="space-y-4">
-                      <input type="text" placeholder="Name" value={editForm.name} onChange={e => setEditForm(f => f ? { ...f, name: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
-                      <input type="email" placeholder="Email" value={editForm.email} onChange={e => setEditForm(f => f ? { ...f, email: e.target.value } : f)} className="w-full border px-3 py-2 rounded" required />
-                      <input type="text" placeholder="Phone" value={editForm.phone || ''} onChange={e => setEditForm(f => f ? { ...f, phone: e.target.value } : f)} className="w-full border px-3 py-2 rounded" />
-                      <select value={editForm.role} onChange={e => setEditForm(f => f ? { ...f, role: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
-                        <option value="student">Student</option>
-                        <option value="mentor">Mentor</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <select value={editForm.status} onChange={e => setEditForm(f => f ? { ...f, status: e.target.value } : f)} className="w-full border px-3 py-2 rounded">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                      </select>
-                      <button type="submit" className="w-full bg-yellow-600 text-white py-2 rounded">Save Changes</button>
-                      <button type="button" onClick={() => setShowEditModal(false)} className="w-full border py-2 rounded mt-2">Cancel</button>
-                    </form>
-                  </div>
-                </div>
-              )}
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-2xl font-bold text-gray-800 mb-6">User Details</h2>
-            
             <div className="space-y-6">
               {/* User Info */}
               <div>
