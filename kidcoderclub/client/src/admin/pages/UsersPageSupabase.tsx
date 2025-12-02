@@ -264,16 +264,6 @@ const UsersPageSupabase: React.FC = () => {
         <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
       )}
     </>
-            <div>
-              <p className="text-sm text-gray-600">Rejected</p>
-              <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <XCircle className="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Filters & Add User */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
