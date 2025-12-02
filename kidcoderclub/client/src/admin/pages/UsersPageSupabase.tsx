@@ -250,20 +250,32 @@ const UsersPageSupabase: React.FC = () => {
   const rejectedCount = users.filter(u => u.status === 'rejected').length;
 
   return (
-    <>
-      {/* Pastikan user/dbUser valid sebelum render */}
-      {(user || dbUser) ? (
+    (user || dbUser) ? (
+      <>
         <div className="p-6 lg:p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
             <p className="text-gray-600">Review and approve/reject user registrations</p>
           </div>
-          {/* ...existing code... */}
+          {/* Stats Card */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            {/* ...stats card code... */}
+          </div>
+          {/* Filters & Add User */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            {/* ...filter code... */}
+          </div>
+          {/* Users Table */}
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            {/* ...table code... */}
+          </div>
         </div>
-      ) : (
-        <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
-      )}
-    </>
+        {/* Add/Edit Modal */}
+        {/* ...modal code... */}
+      </>
+    ) : (
+      <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
+    )
 
       {/* Filters & Add User */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
