@@ -84,23 +84,8 @@ const UsersPageSupabase: React.FC = () => {
   console.log('Auth user:', user);
   // Jika belum login atau bukan admin, cek fallback dbUser
   const isAdmin = (user && user.role === 'admin') || (dbUser && dbUser.role === 'admin');
-  if (!isAdmin) {
-    // Coba fallback ke localStorage
-    const savedUser = localStorage.getItem('kidcoderclub_user');
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        if (parsedUser && parsedUser.role === 'admin') {
-          setDbUser(parsedUser);
-        } else {
-          return <div className="p-8 text-center text-red-500">Akses ditolak: User admin tidak ditemukan. Silakan login ulang.</div>;
-        }
-      } catch (e) {
-        return <div className="p-8 text-center text-red-500">Akses ditolak: Data user rusak. Silakan login ulang.</div>;
-      }
-    } else {
-      return <div className="p-8 text-center text-red-500">Akses ditolak: User admin tidak ditemukan. Silakan login ulang.</div>;
-    }
+  if (!isAdmin || (!user && !dbUser)) {
+    return <div className="p-8 text-center text-red-500">Akses ditolak: User admin tidak ditemukan atau data tidak valid. Silakan login ulang.</div>;
   }
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
@@ -265,7 +250,9 @@ const UsersPageSupabase: React.FC = () => {
   const rejectedCount = users.filter(u => u.status === 'rejected').length;
 
   return (
-    <div className="p-6 lg:p-8">
+    {/* Pastikan user/dbUser valid sebelum render */}
+    {(user || dbUser) ? (
+      <div className="p-6 lg:p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
         <p className="text-gray-600">Review and approve/reject user registrations</p>
@@ -642,7 +629,10 @@ const UsersPageSupabase: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    ) : (
+      <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
+    )}
   );
 };
 
