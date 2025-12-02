@@ -251,7 +251,7 @@ const UsersPageSupabase: React.FC = () => {
 
   return (
     (user || dbUser) ? (
-      <>
+      <div>
         <div className="p-6 lg:p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">User Registrations</h1>
@@ -272,7 +272,7 @@ const UsersPageSupabase: React.FC = () => {
         </div>
         {/* Add/Edit Modal */}
         {/* ...modal code... */}
-      </>
+      </div>
     ) : (
       <div className="p-8 text-center text-red-500">Akses ditolak: Data user tidak valid. Silakan login ulang.</div>
     )
