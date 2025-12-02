@@ -17,8 +17,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load user from localStorage on app start
-  useEffect(() => {
+  // Load user from localStorage on app start and after login/logout
+  const loadUserFromStorage = () => {
     const savedUser = localStorage.getItem('kidcoderclub_user');
     if (savedUser) {
       try {
@@ -26,8 +26,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Error parsing saved user:', error);
         localStorage.removeItem('kidcoderclub_user');
+        setUser(null);
       }
+    } else {
+      setUser(null);
     }
+  };
+
+  useEffect(() => {
+    loadUserFromStorage();
+    // Listen to storage changes (multi-tab)
+    window.addEventListener('storage', loadUserFromStorage);
+    return () => window.removeEventListener('storage', loadUserFromStorage);
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
@@ -63,9 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         avatar: data.avatar || undefined
       };
 
-      setUser(userForAdmin);
       localStorage.setItem('kidcoderclub_user', JSON.stringify(userForAdmin));
       localStorage.setItem('lastAdminEmail', data.email);
+      loadUserFromStorage();
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -122,8 +132,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createdAt: new Date(newUser.createdAt)
       };
       
-      setUser(userWithoutPassword);
       localStorage.setItem('kidcoderclub_user', JSON.stringify(userWithoutPassword));
+      loadUserFromStorage();
       
       return true;
     } catch (error) {
@@ -165,8 +175,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem('kidcoderclub_user');
+    loadUserFromStorage();
   };
 
   const value: AuthContextType = {
