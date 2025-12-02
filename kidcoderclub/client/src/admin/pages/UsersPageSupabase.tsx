@@ -85,8 +85,22 @@ const UsersPageSupabase: React.FC = () => {
   // Jika belum login atau bukan admin, cek fallback dbUser
   const isAdmin = (user && user.role === 'admin') || (dbUser && dbUser.role === 'admin');
   if (!isAdmin) {
-    console.log('Akses ditolak, user:', user, 'dbUser:', dbUser);
-    return <Navigate to="/admin-login" replace />;
+    // Coba fallback ke localStorage
+    const savedUser = localStorage.getItem('kidcoderclub_user');
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        if (parsedUser && parsedUser.role === 'admin') {
+          setDbUser(parsedUser);
+        } else {
+          return <div className="p-8 text-center text-red-500">Akses ditolak: User admin tidak ditemukan. Silakan login ulang.</div>;
+        }
+      } catch (e) {
+        return <div className="p-8 text-center text-red-500">Akses ditolak: Data user rusak. Silakan login ulang.</div>;
+      }
+    } else {
+      return <div className="p-8 text-center text-red-500">Akses ditolak: User admin tidak ditemukan. Silakan login ulang.</div>;
+    }
   }
 
   const [users, setUsers] = useState<UserWithDetails[]>([]);
