@@ -393,55 +393,56 @@ const UsersPageSupabase: React.FC = () => {
                           onClick={() => setSelectedUser(user)}
                           className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                           title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(user)}
-                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
-                          title="Edit User"
-                        >
-                          ✎
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete User"
-                        >
-                          🗑️
-                        </button>
-                        {user.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(user.id)}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                              title="Approve"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleReject(user.id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Reject"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                      {/* Total Users */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Total Users</p>
+                            <p className="text-2xl font-bold text-gray-800">{users.length}</p>
+                          </div>
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <UserCheck className="w-6 h-6 text-blue-600" />
+                          </div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Add User Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                      {/* Pending */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Pending</p>
+                            <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+                          </div>
+                          <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <RefreshCw className="w-6 h-6 text-yellow-600" />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Approved */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Approved</p>
+                            <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
+                          </div>
+                          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-green-600" />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Rejected */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Rejected</p>
+                            <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
+                          </div>
+                          <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <XCircle className="w-6 h-6 text-red-600" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
             <h2 className="text-xl font-bold mb-4">Add New User</h2>
             <form onSubmit={e => { e.preventDefault(); handleAddSubmit(); }} className="space-y-4">
               <input type="text" placeholder="Name" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className="w-full border px-3 py-2 rounded" required />
